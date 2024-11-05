@@ -1,2 +1,4 @@
 # 忽略python虚拟环境
 venv
+# 忽略.env配置文件
+.env
