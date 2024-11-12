@@ -71,3 +71,43 @@ class ZhipuAIEmbeddings(BaseModel, Embeddings):
 ### 总结 `@root_validator()` 的作用
 
 在这个上下文中，`@root_validator()` 的作用是确保模型中的 `client` 字段被正确实例化为 `ZhipuAI` 类的一个对象。如果环境中没有安装 `zhipuai` 库，代码会抛出一个导入错误。这个装饰器的主要目的是在数据模型实例化时，进行额外的逻辑验证和处理，以确保模型的依赖项（如 `client` 字段）在运行时是可用且已正确初始化的。
+
+## `client`不是字典`values`中的一个 Key 吗？为什么能通过self直接调用呢
+
+这是因为 Pydantic 的 BaseModel 在内部会自动处理这个转换过程。让我详细解释下：
+
+1. 在类定义时，我们声明了 client 作为类的属性：
+
+    ```python
+    class ZhipuAIEmbeddings(BaseModel, Embeddings):
+        client: Any  # 这里声明了 client 作为类的属性
+    ```
+
+2. 当使用 @root_validator 时，我们确实是在操作 values 字典：
+
+    ```python
+    @root_validator()
+    def validate_environment(cls, values: Dict) -> Dict:
+        values["client"] = ZhipuAI()  # 将值存入字典
+        return values
+    ```
+
+3. Pydantic 的 BaseModel 会自动将 values 字典中的值映射到类的属性上。这是 Pydantic 的一个核心特性。它会：
+
+    * 接收 validate_environment 返回的 values 字典
+    * 找到字典中的 "client" 键
+    * 将对应的值自动设置为实例的 self.client 属性
+
+所以虽然我们在验证器中使用字典操作，但 Pydantic 会自动将其转换为实例属性，使得我们可以通过 self.client 来访问。
+
+这个过程可以类比为：
+
+```python
+# Pydantic 在内部大致进行这样的操作
+class ZhipuAIEmbeddings:
+    def __init__(self):
+        values = self.validate_environment({})  # 调用验证器
+        self.client = values["client"]  # 将字典值转换为实例属性
+```
+
+这就是为什么我们可以在 embed_query 方法中直接使用 self.client 的原因。
