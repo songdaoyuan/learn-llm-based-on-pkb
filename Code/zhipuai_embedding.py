@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 embed_query 方法, 用于对单个字符串(query)进行 embedding
 embed_documents 方法, 用于对字符串列表(documents)进行 embedding。
 
-源码解析参考 ../Doc/66CCFF nbstripout清理Jupyter中的输出内容.md
+源码解析参考 ../Doc/0xC0FFee 代码笔记.md
 """
 
 
