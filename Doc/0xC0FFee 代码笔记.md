@@ -76,14 +76,14 @@ class ZhipuAIEmbeddings(BaseModel, Embeddings):
 
 这是因为 Pydantic 的 BaseModel 在内部会自动处理这个转换过程。让我详细解释下：
 
-### 1. 在类定义时，我们声明了 client 作为类的属性：
+### 1. 在类定义时，我们声明了 client 作为类的属性
 
 ```python
 class ZhipuAIEmbeddings(BaseModel, Embeddings):
     client: Any  # 这里声明了 client 作为类的属性
 ```
 
-### 2. 当使用 @root_validator 时，我们确实是在操作 values 字典：
+### 2. 当使用 @root_validator 时，我们确实是在操作 values 字典
 
 ```python
 @root_validator()
@@ -92,7 +92,7 @@ def validate_environment(cls, values: Dict) -> Dict:
     return values
 ```
 
-### 3. Pydantic 的 BaseModel 会自动将 values 字典中的值映射到类的属性上。这是 Pydantic 的一个核心特性。它会：
+### 3. Pydantic 的 BaseModel 会自动将 values 字典中的值映射到类的属性上。这是 Pydantic 的一个核心特性。它会
 
 * 接收 validate_environment 返回的 values 字典
 * 找到字典中的 "client" 键
