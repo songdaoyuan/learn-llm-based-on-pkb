@@ -141,3 +141,58 @@
 ### 基于 LangChain 调用 智谱 GLM
 
 Todo
+
+## 构建检索问答链
+
+### 加载向量数据库
+
+!!!**说明**
+    如果还没有在本地持久化向量数据库
+    可以参考[DataProcessing.ipynb](../Code/DataProcessing.ipynb)的内容对原 MD 文档进行处理
+    然后参考[ZhipuAIEmbeddingAPI.ipynb](../Code/ZhipuAIEmbeddingAPI.ipynb)和[zhipuai_embedding.py](../Code/zhipuai_embedding.py)
+    中的内容, 构建向量数据库并且持久化的存储在本地
+
+加载向量数据库和环境变量
+
+```python
+import os
+import sys
+sys.path.append("../C3 搭建知识库") # 将父目录放入系统路径中
+
+# 使用智谱 Embedding API，注意，需要将上一章实现的封装代码下载到本地
+from zhipuai_embedding import ZhipuAIEmbeddings
+from langchain.vectorstores.chroma import Chroma
+from dotenv import load_dotenv, find_dotenv
+
+_ = load_dotenv(find_dotenv())    # read local .env file
+zhipuai_api_key = os.environ['ZHIPUAI_API_KEY']
+
+# 定义 Embeddings
+embedding = ZhipuAIEmbeddings()
+# 向量数据库持久化路径
+persist_directory = '../C3 搭建知识库/data_base/vector_db/chroma'
+# 加载数据库
+vectordb = Chroma(
+    persist_directory=persist_directory,  # 允许我们将persist_directory目录保存到磁盘上
+    embedding_function=embedding
+)
+
+print(f"向量库中存储的数量：{vectordb._collection.count()}")
+```
+
+如果需要测试向量数据库, 可以使用一个问题 query 在向量数据库中根据相似性进行检索，返回前 k 个最相似的文档。
+
+```python
+# 使用相似性搜索前，请确保你已安装了 OpenAI 开源的快速分词工具 tiktoken 包
+# pip install tiktoken
+question = "什么是prompt engineering?"
+docs = vectordb.similarity_search(question,k=3)
+print(f"检索到的内容数：{len(docs)}")
+```
+
+打印检索内容
+
+```python
+for i, doc in enumerate(docs):
+    print(f"检索到的第{i}个内容: \n {doc.page_content}", end="\n-----------------------------------------------------\n")
+```
