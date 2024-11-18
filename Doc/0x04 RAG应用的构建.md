@@ -82,7 +82,7 @@
         `from langchain.prompts.chat import ChatPromptTemplate` 这两个`ChatPromptTemplate`实际上指向的是同一个类
         LangChain 正在进行架构重组，将核心功能移至 langchain-core 包中，以实现更好的模块化和维护性，推荐使用第一种导入方式，它更稳定且是未来推荐的用法。
 
-    代码示例见[LangChainOpenAI.ipynb #代码块3](..\Code\LangChainOpenAI.ipynb)
+    代码示例见[LangChainOpenAI.ipynb #代码块3](../Code/LangChainOpenAI.ipynb)
 
 3. 输出解析器 Output parser
 
@@ -106,7 +106,7 @@
     'I carried luggage heavier than my body and dived into the bottom of the Nile River. After passing through several flashes of lightning, I saw a pile of halos, not sure if this is the place.'
     ```
 
-    代码示例见[LangChainOpenAI.ipynb #代码块4](..\Code\LangChainOpenAI.ipynb)
+    代码示例见[LangChainOpenAI.ipynb #代码块4](../Code/LangChainOpenAI.ipynb)
 
 4. 使用 LCEL 构建完整流程链
 
@@ -136,7 +136,7 @@
     'I carried luggage heavier than my body and dived into the bottom of the Nile River. After passing through several flashes of lightning, I saw a pile of halos, not sure if this is the place.'
     ```
 
-    代码示例见[LangChainOpenAI.ipynb #代码块5](..\Code\LangChainOpenAI.ipynb)
+    代码示例见[LangChainOpenAI.ipynb #代码块5](../Code/LangChainOpenAI.ipynb)
 
 ### 基于 LangChain 调用 智谱 GLM
 
