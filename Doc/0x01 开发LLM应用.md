@@ -8,7 +8,7 @@
 
 ## 大模型开发的一般流程
 
-![alt text](..\figure\0x01_Figure_00_LLM_developing_whole.png)
+![alt text](../figure/0x01_Figure_00_LLM_developing_whole.png)
 
 1. 确定目标：明确应用场景、目标用户和核心价值，从小规模MVP开始逐步完善。
 
@@ -52,7 +52,7 @@
 
 加载本地文档 -> 读取文本 -> 文本分割 -> 文本向量化 -> question 向量化 -> 在文本向量中匹配出与问句向量最相似的 top k 个 -> 匹配出的文本作为上下文和问题一起添加到 Prompt 中 -> 提交给 LLM 生成回答
 
-![LangChain](..\figure\0x00_Figure_01_LANGCHAIN.png)
+![LangChain](../figure/0x00_Figure_01_LANGCHAIN.png)
 
 #### 1.搜集和整理文档
 
