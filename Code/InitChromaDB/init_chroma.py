@@ -12,9 +12,9 @@ _ = load_dotenv(find_dotenv("../.env"))
 folder_path = r"../../DataBase/KnowledgeDB"
 # 使用.env文件指定
 # folder_path = os.environ["KNOWLEDGE_DATABASE_PATH"]
+
 # 文档列表
 file_paths = []
-
 for root, dirs, files in os.walk(folder_path):
     for file in files:
         file_path = os.path.join(root, file)
@@ -42,10 +42,19 @@ texts = []
 for loader in loaders:
     texts.extend(loader.load())
 
-text = texts[1]
-print(
-    f"每一个元素的类型：{type(text)}.",
-    f"该文档的描述性数据：{text.metadata}",
-    f"查看该文档的内容:\n{text.page_content[0:]}",
-    sep="\n------\n",
-)
+# text = texts[1]
+# print(
+#     f"每一个元素的类型：{type(text)}.",
+#     f"该文档的描述性数据：{text.metadata}",
+#     f"查看该文档的内容:\n{text.page_content[0:]}",
+#     sep="\n------\n",
+# )
+
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+
+# 切分文档
+text_splitter = RecursiveCharacterTextSplitter(
+    chunk_size=500, chunk_overlap=50)
+
+split_docs = text_splitter.split_documents(texts)
+print(split_docs)
