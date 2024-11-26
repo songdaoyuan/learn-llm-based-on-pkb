@@ -8,8 +8,10 @@ from dotenv import load_dotenv, find_dotenv
 
 _ = load_dotenv(find_dotenv("../.env"))
 
-# 文档库路径
+# 手动文档库路径
 folder_path = r"../../DataBase/KnowledgeDB"
+# 使用.env文件指定
+# folder_path = os.environ["KNOWLEDGE_DATABASE_PATH"]
 # 文档列表
 file_paths = []
 
@@ -17,10 +19,11 @@ for root, dirs, files in os.walk(folder_path):
     for file in files:
         file_path = os.path.join(root, file)
         file_paths.append(file_path)
-print(file_paths[:3])
+print(file_paths)
 
-from langchain.document_loaders.pdf import PyMuPDFLoader
-from langchain.document_loaders.markdown import UnstructuredMarkdownLoader
+# 更新到langchain最新的*Loader引用
+from langchain_community.document_loaders import PyMuPDFLoader
+from langchain_community.document_loaders import UnstructuredMarkdownLoader
 
 # 遍历文件路径并把实例化的loader存放在loaders里
 loaders = []
@@ -36,10 +39,13 @@ for file_path in file_paths:
 # 下载文件并存储到text
 texts = []
 
-for loader in loaders: texts.extend(loader.load())
+for loader in loaders:
+    texts.extend(loader.load())
 
 text = texts[1]
-print(f"每一个元素的类型：{type(text)}.", 
-    f"该文档的描述性数据：{text.metadata}", 
-    f"查看该文档的内容:\n{text.page_content[0:]}", 
-    sep="\n------\n")
+print(
+    f"每一个元素的类型：{type(text)}.",
+    f"该文档的描述性数据：{text.metadata}",
+    f"查看该文档的内容:\n{text.page_content[0:]}",
+    sep="\n------\n",
+)
