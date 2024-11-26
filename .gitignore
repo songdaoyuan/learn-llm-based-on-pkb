@@ -1,4 +1,7 @@
-# 忽略python虚拟环境
+# 忽略python的文件
 venv
+*.pyc
 # 忽略.env配置文件
 .env
+# 忽略chroma的内容
+Chroma
