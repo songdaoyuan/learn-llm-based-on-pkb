@@ -83,7 +83,7 @@ embedding = ZhipuAIEmbeddings()
 # 定义持久化路径
 persist_directory = '../DataBase/chroma'
 
-from langchain.vectorstores.chroma import Chroma
+from langchain_community.vectorstores import Chroma
 
 vectordb = Chroma.from_documents(
     documents=split_docs[:5], # 免费版本的API向量模型 Embedding-2 速率限制为5
