@@ -86,7 +86,7 @@ persist_directory = '../DataBase/chroma'
 from langchain_community.vectorstores import Chroma
 
 vectordb = Chroma.from_documents(
-    documents=split_docs[:5], # 免费版本的API向量模型 Embedding-2 速率限制为5
+    documents=split_docs[:3], # 免费版本的API向量模型 Embedding-2 速率限制为5
     embedding=embedding,
     persist_directory=persist_directory  # 允许我们将persist_directory目录保存到磁盘上
 )
