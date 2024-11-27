@@ -17,7 +17,7 @@ vectordb = Chroma(
     embedding_function=embedding
 )
 
-question="怎么配置安全策略"
+question="CORS跨域错误"
 
 # 余弦相似度检索
 sim_docs = vectordb.similarity_search(question,k=3)
@@ -25,8 +25,8 @@ print(f"检索到的内容数：{len(sim_docs)}")
 for i, sim_doc in enumerate(sim_docs):
     print(f"检索到的第{i}个内容: \n{sim_doc.page_content[:2000]}", end="\n--------------\n")
 
-# 最大边际相关性检索
-mmr_docs = vectordb.max_marginal_relevance_search(question,k=3)
-print(f"检索到的内容数：{len(mmr_docs)}")
-for i, sim_doc in enumerate(mmr_docs):
-    print(f"MMR 检索到的第{i}个内容: \n{sim_doc.page_content[:200]}", end="\n--------------\n")
+# # 最大边际相关性检索
+# mmr_docs = vectordb.max_marginal_relevance_search(question,k=3)
+# print(f"检索到的内容数：{len(mmr_docs)}")
+# for i, sim_doc in enumerate(mmr_docs):
+#     print(f"MMR 检索到的第{i}个内容: \n{sim_doc.page_content[:200]}", end="\n--------------\n")

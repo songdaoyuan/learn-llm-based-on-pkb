@@ -8,9 +8,9 @@ from dotenv import load_dotenv, find_dotenv
 # ----------------------------     1.读取配置文件, 指定知识库路径     ----------------------------
 _ = load_dotenv(find_dotenv(".env"))
 # 手动指定知识库路径
-folder_path = r"../DataBase/KnowledgeDB"
+# folder_path = r"../DataBase/KnowledgeDB"
 # 使用.env文件指定知识库路径
-# folder_path = os.environ["KNOWLEDGE_DATABASE_PATH"]
+folder_path = os.environ["KNOWLEDGE_DATABASE_PATH"]
 # -----------------------------------------------------------------------------------------------
 
 
@@ -69,13 +69,14 @@ text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=20
 
 split_docs = text_splitter.split_documents(doc_pages)
 
-# print(split_docs)
+print(split_docs)
 print(f"切分后的文件数量：{len(split_docs)}")
 print(f"切分后的字符数（可以用来大致评估 token 数）：{sum([len(doc.page_content) for doc in split_docs])}")
 # ----------------------------------------------------------------------------------------
 
 
 # ----------------------------     5.构建向量数据库     ----------------------------
+from langchain_chroma import Chroma
 from zhipuai_embedding import ZhipuAIEmbeddings
 
 embedding = ZhipuAIEmbeddings()
@@ -83,14 +84,28 @@ embedding = ZhipuAIEmbeddings()
 # 定义持久化路径
 persist_directory = '../DataBase/chroma'
 
-from langchain_community.vectorstores import Chroma
 
-vectordb = Chroma.from_documents(
-    documents=split_docs[:3], # 免费版本的API向量模型 Embedding-2 速率限制为5
-    embedding=embedding,
-    persist_directory=persist_directory  # 允许我们将persist_directory目录保存到磁盘上
-)
+# 加载现有的向量数据库（如果已经存在）
+try:
+    vectordb = Chroma(persist_directory=persist_directory, embedding_function=embedding)
+    print("成功加载已有的向量数据库")
+except Exception as e:
+    print("未找到已有的向量数据库，创建新的向量数据库")
+    vectordb = Chroma(embedding_function=embedding, persist_directory=persist_directory)
+# 分批处理文档
+batch_size = 5  # 每批处理的文档数量，受并发限制应该<=5
+total_docs = len(split_docs)  # 总文档数
 
-vectordb.persist()
+for i in range(0, total_docs, batch_size):
+    # 获取当前批次的文档
+    batch_docs = split_docs[i:i+batch_size]
+    print(f"正在处理第 {i // batch_size + 1} 批文档，共 {len(batch_docs)} 个文档")
 
-print(f"向量库中存储的数量：{vectordb._collection.count()}")
+    # 将当前批次的文档添加到向量数据库
+    vectordb.add_documents(documents=batch_docs)
+
+    # 持久化存储数据库
+    vectordb.persist()
+    print(f"第 {i // batch_size + 1} 批文档已保存到向量数据库")
+
+print("所有文档已成功存储到向量数据库")
