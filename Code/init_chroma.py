@@ -46,7 +46,7 @@ for loader in loaders:
 
 
 # ----------------------------     3.对文档的数据进行清洗     ----------------------------
-# 使用正则表达式去除段落内部的换行符，但保留段落之间的换行 & 去除多余的空格
+# 使用正则表达式去除段落内部的换行符, 但保留段落之间的换行 & 去除多余的空格
 import re
 for doc_page in doc_pages:
     doc_page.page_content = re.sub(r'(?<=\n)\n+(?!\n)', ' ', doc_page.page_content)
@@ -65,7 +65,7 @@ for doc_page in doc_pages:
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # 切分文档
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=2500, chunk_overlap=250)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=3000, chunk_overlap=300)
 
 split_docs = text_splitter.split_documents(doc_pages)
 print(split_docs)
@@ -83,7 +83,7 @@ persist_directory = '../DataBase/chroma'
 from langchain.vectorstores.chroma import Chroma
 
 vectordb = Chroma.from_documents(
-    documents=split_docs[:3], # 为了速度，只选择前 3 个切分的 doc 进行生成
+    documents=split_docs[:5], # 免费版本的API向量模型 Embedding-2 速率限制为5
     embedding=embedding,
     persist_directory=persist_directory  # 允许我们将persist_directory目录保存到磁盘上
 )
