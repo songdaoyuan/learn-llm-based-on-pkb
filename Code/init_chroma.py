@@ -68,7 +68,10 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 text_splitter = RecursiveCharacterTextSplitter(chunk_size=3000, chunk_overlap=300)
 
 split_docs = text_splitter.split_documents(doc_pages)
-print(split_docs)
+
+# print(split_docs)
+print(f"切分后的文件数量：{len(split_docs)}")
+print(f"切分后的字符数（可以用来大致评估 token 数）：{sum([len(doc.page_content) for doc in split_docs])}")
 # ----------------------------------------------------------------------------------------
 
 
