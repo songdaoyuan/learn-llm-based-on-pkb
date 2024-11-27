@@ -65,7 +65,7 @@ for doc_page in doc_pages:
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # 切分文档
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=3000, chunk_overlap=300)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=2000, chunk_overlap=200)
 
 split_docs = text_splitter.split_documents(doc_pages)
 
