@@ -1,5 +1,6 @@
 # 忽略python的文件
 venv
+__pycache__
 *.pyc
 # 忽略.env配置文件
 .env
