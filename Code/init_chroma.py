@@ -62,6 +62,8 @@ for doc_page in doc_pages:
 
 # ----------------------------     4.对文档的数据进行切分     ----------------------------
 # 可以自定义切分方式
+# ToDo
+# 使用Markdown切分工具, 其按照文档的结构, 仅提取标题至元信息, 并不关心其它语意结构
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 # 切分文档
