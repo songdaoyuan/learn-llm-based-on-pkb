@@ -196,3 +196,42 @@ print(f"检索到的内容数：{len(docs)}")
 for i, doc in enumerate(docs):
     print(f"检索到的第{i}个内容: \n {doc.page_content}", end="\n-----------------------------------------------------\n")
 ```
+
+### 创建LLM实例并构建检索问答链
+
+!!!**说明**
+    需要使用LangChain初始化一个LLM实例
+    可以参考[LangChainOpenAI.ipynb](../Code/LangChainOpenAI.ipynb)的内容创建一个ChatGPT实例或者Kimi实例
+
+```python
+from langchain.prompts import PromptTemplate
+
+template = """使用以下上下文来回答最后的问题。如果你不知道答案，就说你不知道，不要试图编造答
+案。最多使用三句话。尽量使答案简明扼要。总是在回答的最后说“谢谢你的提问！”。
+{context}
+问题: {question}
+"""
+
+QA_CHAIN_PROMPT = PromptTemplate(input_variables=["context","question"],
+                                 template=template)
+
+```
+
+再创建一个基于模板的检索链
+
+```python
+from langchain.chains import RetrievalQA
+
+qa_chain = RetrievalQA.from_chain_type(llm,
+                                       retriever=vectordb.as_retriever(),
+                                       return_source_documents=True,
+                                       chain_type_kwargs={"prompt":QA_CHAIN_PROMPT})
+
+```
+
+对于方法 `RetrievalQA.from_chain_type()` 来说, 如下参数是可选的
+
+* `llm`: 使用的LLM大模型
+* `chain_type`: 值可选  `map_reduce`, 也可以利用 `load_qa_chain()` 方法指定
+* `chain_type_kwargs`: 自定义的 `prompt`, 格式为 `{"prompt": PROMPT}`
+* `return_source_documents`: 是否返回源文档, 也可以使用 `RetrievalQAWithSourceChain()` 方法, 返回源文档的引用
