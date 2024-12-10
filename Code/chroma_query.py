@@ -1,4 +1,4 @@
-from langchain_community.vectorstores import Chroma
+from langchain_chroma import Chroma
 from zhipuai_embedding import ZhipuAIEmbeddings
 
 from dotenv import load_dotenv, find_dotenv
@@ -17,13 +17,15 @@ vectordb = Chroma(
     embedding_function=embedding
 )
 
-question="CORS跨域错误"
+print(f"向量数据库中存储的量: {vectordb._collection.count()}")
 
-# 余弦相似度检索
-sim_docs = vectordb.similarity_search(question,k=3)
-print(f"检索到的内容数：{len(sim_docs)}")
-for i, sim_doc in enumerate(sim_docs):
-    print(f"检索到的第{i}个内容: \n{sim_doc.page_content[:2000]}", end="\n--------------\n")
+# question="CORS跨域错误"
+
+# # 余弦相似度检索
+# sim_docs = vectordb.similarity_search(question,k=3)
+# print(f"检索到的内容数：{len(sim_docs)}")
+# for i, sim_doc in enumerate(sim_docs):
+#     print(f"检索到的第{i}个内容: \n{sim_doc.page_content[:2000]}", end="\n--------------\n")
 
 # # 最大边际相关性检索
 # mmr_docs = vectordb.max_marginal_relevance_search(question,k=3)
