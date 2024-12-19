@@ -7,7 +7,7 @@ import logging
 
 
 from langchain.embeddings.base import Embeddings
-from langchain.pydantic_v1 import BaseModel, root_validator
+from pydantic import BaseModel, model_validator
 
 # 初始化日志记录器
 logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class ZhipuAIEmbeddings(BaseModel, Embeddings):
     client: Any
     """`zhipuai.ZhipuAI"""
 
-    @root_validator()
+    @model_validator(mode="after")
     # 声明式、符合 Pydantic 的初始化和校验过程, 类似于__init__
     def validate_environment(cls, values: Dict) -> Dict:
         """
