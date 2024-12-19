@@ -111,3 +111,88 @@ class ZhipuAIEmbeddings:
 ```
 
 这就是为什么我们可以在 embed_query 方法中直接使用 self.client 的原因。
+
+## 在pydantic v1中，可以使用@root_validator()来实现client实例初始化，但是@model_validator()为什么就不支持了呢？
+
+你提到的区别与 Pydantic v2 中的设计更改有关。**`@model_validator`** 是 Pydantic v2 中的新特性，而 **`@root_validator`** 是 Pydantic v1 中的特性。Pydantic v2 做了一些架构上的更改，导致它们的行为有所不同。下面是详细的解释：
+
+### 1. **Pydantic v1 (`@root_validator`)**
+
+在 Pydantic v1 中，`@root_validator` 是用于在所有字段验证完成后，执行一些额外的验证逻辑或修改字段值。它允许你修改整个模型的字段，并且返回修改后的字段字典。
+
+```python
+from pydantic import BaseModel, root_validator
+
+class ZhipuAIEmbeddings(BaseModel):
+    client: Optional[Any] = None
+
+    @root_validator(pre=False)
+    def validate_environment(cls, values: Dict) -> Dict:
+        if values["client"] is None:
+            from zhipuai import ZhipuAI
+            values["client"] = ZhipuAI()  # 修改 values 字典
+        return values
+```
+
+在这个例子中，`@root_validator` 能够正确修改 `values` 字典，并将其返回。这是 Pydantic v1 的典型用法。
+
+### 2. **Pydantic v2 (`@model_validator`)**
+
+在 Pydantic v2 中，`@root_validator` 被替换为 **`@model_validator`**，并且验证的机制有了一些变化。`@model_validator` 的设计是为了让校验逻辑更明确、严格，避免一些在 v1 中可能导致混淆的行为。尤其是在字段的修改上，v2 更加严谨。
+
+**关键区别**是，Pydantic v2 不再允许直接修改 `values`，同时它引入了两种验证模式：**before** 和 **after**。
+
+- **before** 模式：字段验证之前运行。
+- **after** 模式：字段验证之后运行。
+
+在 `after` 模式下，Pydantic v2 期望验证器返回的不是修改后的字典，而是一个经过验证的对象。你不能像在 v1 中那样直接修改 `values` 字典，因为 v2 的 `@model_validator` 旨在更严格地保护模型字段的完整性和不变性。
+
+例如，你的代码中：
+
+```python
+@model_validator(mode="after")
+def validate_environment(cls, values: Dict) -> Dict:
+    if values["client"] is None:
+        from zhipuai import ZhipuAI
+        values["client"] = ZhipuAI()  # 直接修改 values 是不允许的
+    return values
+```
+
+在 v2 中，Pydantic 不允许直接修改 `values`。你需要返回一个新的对象或者使用 `setattr` 来修改实例字段。
+
+### 解决方案
+
+在 Pydantic v2 中，如果你需要在字段验证之后进行某些额外的初始化或修改，比如实例化 `client`，你可以使用 `setattr` 或者直接在 `__init__` 中处理。
+
+#### 1. 使用 `setattr` 修改字段
+
+```python
+@model_validator(mode="after")
+def validate_environment(cls, values: Dict) -> Dict:
+    if values["client"] is None:
+        from zhipuai import ZhipuAI
+        setattr(cls, "client", ZhipuAI())  # 使用 setattr 修改字段
+    return values
+```
+
+#### 2. 使用 `__init__` 方法
+
+在 Pydantic v2 中，更推荐使用 `__init__` 方法来处理类似的初始化逻辑，因为它更符合 Pydantic v2 的设计哲学：
+
+```python
+class ZhipuAIEmbeddings(BaseModel, Embeddings):
+    client: Optional[Any] = None
+
+    def __init__(self, **data):
+        super().__init__(**data)
+        if self.client is None:
+            from zhipuai import ZhipuAI
+            self.client = ZhipuAI()  # 初始化 client
+```
+
+### 总结
+
+- 在 **Pydantic v1** 中，`@root_validator` 允许你直接修改 `values` 字典，这使得修改字段的方式非常灵活。
+- 在 **Pydantic v2** 中，`@model_validator` 的行为更加严格，不允许直接修改 `values`。你需要使用 `setattr` 或者在 `__init__` 方法中进行初始化。
+
+这是 Pydantic v2 为了增强数据模型的安全性和一致性而做出的设计决策。
